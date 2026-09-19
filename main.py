@@ -13,7 +13,16 @@ from numpy.linalg import norm
 
 
 
-feature_list = np.array(pickle.load(open('embedding.pkl','rb')))
+from huggingface_hub import hf_hub_download
+
+embedding_path = hf_hub_download(
+    repo_id="joel799659/fashion-recommender-embeddings-pkl",
+    filename="embedding.pkl",
+    repo_type="dataset"
+)
+
+with open(embedding_path, "rb") as file:
+    feature_list = np.array(pickle.load(file))
 filenames = pickle.load(open('filenames.pkl','rb'))
 
 
