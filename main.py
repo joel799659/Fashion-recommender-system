@@ -41,10 +41,17 @@ st.title('Fashion Recommender System')
 
 def save_uploaded_file(uploaded_file):
     try:
-        with open(os.path.join('uploads',uploaded_file.name),'wb') as f:
+        os.makedirs('uploads', exist_ok=True)
+
+        file_path = os.path.join('uploads', uploaded_file.name)
+
+        with open(file_path, 'wb') as f:
             f.write(uploaded_file.getbuffer())
+
         return 1
-    except:
+
+    except Exception as e:
+        st.error(f"File upload error: {e}")
         return 0
 
 
@@ -74,7 +81,12 @@ if uploaded_file is not None:
         display_image = Image.open(uploaded_file)
         st.image(display_image)
 
-        features = feature_extraction(os.path.join('uploads',uploaded_file.name),model)
+        image_path = os.path.join('uploads', uploaded_file.name)
+
+        features = feature_extraction(
+            image_path,
+            model
+        )
         st.text(features)
         indices = recommend(features,feature_list)
 
