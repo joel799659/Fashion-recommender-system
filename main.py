@@ -25,6 +25,7 @@ HF_IMAGES_BASE = "https://huggingface.co/datasets/joel799659/fashion-recommender
 
 @st.cache_resource
 def load_embeddings():
+
     embedding_path = hf_hub_download(
         repo_id="joel799659/fashion-recommender-embeddings-pkl",
         filename="embedding.pkl",
@@ -46,6 +47,7 @@ feature_list = load_embeddings()
 
 @st.cache_resource
 def load_filenames():
+
     filenames_path = hf_hub_download(
         repo_id="joel799659/fashion-recommender-images",
         filename="filenames_hf.pkl",
@@ -95,7 +97,7 @@ st.title("Fashion Recommender System")
 
 
 # -----------------------------
-# Save Uploaded Image
+# Save Uploaded File
 # -----------------------------
 
 def save_uploaded_file(uploaded_file):
@@ -175,7 +177,7 @@ def recommend(features, features_list):
 
 
 # -----------------------------
-# Display Recommended Image
+# Hugging Face Image URL
 # -----------------------------
 
 def get_hf_image_url(path):
@@ -212,7 +214,9 @@ if uploaded_file is not None:
         )
 
 
-        # Extract features
+        # -----------------------------
+        # Feature Extraction
+        # -----------------------------
 
         features = feature_extraction(
             uploaded_path,
@@ -220,7 +224,9 @@ if uploaded_file is not None:
         )
 
 
-        # Get recommendations
+        # -----------------------------
+        # Get Recommendations
+        # -----------------------------
 
         indices = recommend(
             features,
@@ -235,6 +241,7 @@ if uploaded_file is not None:
 
 
         with col1:
+
             st.image(
                 get_hf_image_url(
                     filenames[indices[0][0]]
@@ -243,6 +250,7 @@ if uploaded_file is not None:
 
 
         with col2:
+
             st.image(
                 get_hf_image_url(
                     filenames[indices[0][1]]
@@ -251,6 +259,7 @@ if uploaded_file is not None:
 
 
         with col3:
+
             st.image(
                 get_hf_image_url(
                     filenames[indices[0][2]]
@@ -259,6 +268,7 @@ if uploaded_file is not None:
 
 
         with col4:
+
             st.image(
                 get_hf_image_url(
                     filenames[indices[0][3]]
@@ -267,52 +277,15 @@ if uploaded_file is not None:
 
 
         with col5:
+
             st.image(
                 get_hf_image_url(
                     filenames[indices[0][4]]
                 )
-            )    preprocessed_img = preprocess_input(expanded_img_array)
-    result = model.predict(preprocessed_img).flatten()
-    normalized_result = result / norm(result)
+            )
 
-    return normalized_result
-
-def recommend(features,features_list):
-    neighbors = NearestNeighbors(n_neighbors=6, algorithm='brute', metric='euclidean')
-    neighbors.fit(feature_list)
-
-    distances, indices = neighbors.kneighbors([features])
-
-    return indices
-
-
-
-uploaded_file = st.file_uploader('Choose an image')
-if uploaded_file is not None:
-    if save_uploaded_file(uploaded_file):
-        display_image = Image.open(uploaded_file)
-        st.image(display_image)
-
-        image_path = os.path.join('uploads', uploaded_file.name)
-
-        features = feature_extraction(
-            image_path,
-            model
-        )
-        st.text(features)
-        indices = recommend(features,feature_list)
-
-        col1,col2,col3,col4,col5 = st.columns(5)
-
-        with col1:
-            st.image(filenames[indices[0][0]])
-        with col2:
-            st.image(filenames[indices[0][1]])
-        with col3:
-            st.image(filenames[indices[0][2]])
-        with col4:
-            st.image(filenames[indices[0][3]])
-        with col5:
-            st.image(filenames[indices[0][4]])
     else:
-        st.header("Some error occured in file upload")
+
+        st.header(
+            "Some error occurred in file upload"
+        )
