@@ -12,16 +12,20 @@ from numpy.linalg import norm
 from huggingface_hub import hf_hub_download
 
 
-# -----------------------------
+# =========================================================
 # Hugging Face Configuration
-# -----------------------------
+# =========================================================
 
-HF_IMAGES_BASE = "https://huggingface.co/datasets/joel799659/fashion-recommender-images/resolve/main/"
+HF_IMAGES_BASE = (
+    "https://huggingface.co/datasets/"
+    "joel799659/fashion-recommender-images/"
+    "resolve/main/"
+)
 
 
-# -----------------------------
+# =========================================================
 # Load Embeddings
-# -----------------------------
+# =========================================================
 
 @st.cache_resource
 def load_embeddings():
@@ -41,9 +45,9 @@ def load_embeddings():
 feature_list = load_embeddings()
 
 
-# -----------------------------
+# =========================================================
 # Load Image Filenames
-# -----------------------------
+# =========================================================
 
 @st.cache_resource
 def load_filenames():
@@ -63,9 +67,9 @@ def load_filenames():
 filenames = load_filenames()
 
 
-# -----------------------------
+# =========================================================
 # Load ResNet50 Model
-# -----------------------------
+# =========================================================
 
 @st.cache_resource
 def load_model():
@@ -89,16 +93,16 @@ def load_model():
 model = load_model()
 
 
-# -----------------------------
-# Streamlit UI
-# -----------------------------
+# =========================================================
+# Streamlit Page
+# =========================================================
 
 st.title("Fashion Recommender System")
 
 
-# -----------------------------
-# Save Uploaded File
-# -----------------------------
+# =========================================================
+# Save Uploaded Image
+# =========================================================
 
 def save_uploaded_file(uploaded_file):
 
@@ -118,14 +122,16 @@ def save_uploaded_file(uploaded_file):
 
     except Exception as e:
 
-        st.error(f"File upload error: {e}")
+        st.error(
+            f"File upload error: {e}"
+        )
 
         return None
 
 
-# -----------------------------
+# =========================================================
 # Feature Extraction
-# -----------------------------
+# =========================================================
 
 def feature_extraction(img_path, model):
 
@@ -155,9 +161,9 @@ def feature_extraction(img_path, model):
     return normalized_result
 
 
-# -----------------------------
+# =========================================================
 # Recommendation
-# -----------------------------
+# =========================================================
 
 def recommend(features, features_list):
 
@@ -176,24 +182,28 @@ def recommend(features, features_list):
     return indices
 
 
-# -----------------------------
+# =========================================================
 # Hugging Face Image URL
-# -----------------------------
+# =========================================================
 
 def get_hf_image_url(path):
 
     return HF_IMAGES_BASE + path
 
 
-# -----------------------------
+# =========================================================
 # Upload Image
-# -----------------------------
+# =========================================================
 
 uploaded_file = st.file_uploader(
     "Choose an image",
     type=["jpg", "jpeg", "png"]
 )
 
+
+# =========================================================
+# Process Uploaded Image
+# =========================================================
 
 if uploaded_file is not None:
 
@@ -202,6 +212,10 @@ if uploaded_file is not None:
     )
 
     if uploaded_path:
+
+        # -----------------------------------------
+        # Display Uploaded Image
+        # -----------------------------------------
 
         display_image = Image.open(
             uploaded_file
@@ -214,9 +228,9 @@ if uploaded_file is not None:
         )
 
 
-        # -----------------------------
-        # Feature Extraction
-        # -----------------------------
+        # -----------------------------------------
+        # Extract Features
+        # -----------------------------------------
 
         features = feature_extraction(
             uploaded_path,
@@ -224,9 +238,9 @@ if uploaded_file is not None:
         )
 
 
-        # -----------------------------
+        # -----------------------------------------
         # Get Recommendations
-        # -----------------------------
+        # -----------------------------------------
 
         indices = recommend(
             features,
@@ -234,58 +248,90 @@ if uploaded_file is not None:
         )
 
 
-        st.subheader("Recommended Images")
+        # -----------------------------------------
+        # Display Recommendations
+        # -----------------------------------------
+
+        st.subheader(
+            "Recommended Images"
+        )
 
 
         col1, col2, col3, col4, col5 = st.columns(5)
 
+
+        # -----------------------------------------
+        # Recommendation 1
+        # -----------------------------------------
 
         with col1:
 
             st.image(
                 get_hf_image_url(
                     filenames[indices[0][0]]
-                )
+                ),
+                width=150
             )
 
+
+        # -----------------------------------------
+        # Recommendation 2
+        # -----------------------------------------
 
         with col2:
 
             st.image(
                 get_hf_image_url(
                     filenames[indices[0][1]]
-                )
+                ),
+                width=150
             )
 
+
+        # -----------------------------------------
+        # Recommendation 3
+        # -----------------------------------------
 
         with col3:
 
             st.image(
                 get_hf_image_url(
                     filenames[indices[0][2]]
-                )
+                ),
+                width=150
             )
 
+
+        # -----------------------------------------
+        # Recommendation 4
+        # -----------------------------------------
 
         with col4:
 
             st.image(
                 get_hf_image_url(
                     filenames[indices[0][3]]
-                )
+                ),
+                width=150
             )
 
+
+        # -----------------------------------------
+        # Recommendation 5
+        # -----------------------------------------
 
         with col5:
 
             st.image(
                 get_hf_image_url(
                     filenames[indices[0][4]]
-                )
+                ),
+                width=150
             )
+
 
     else:
 
-        st.header(
-            "Some error occurred in file upload"
+        st.error(
+            "Some error occurred while uploading the file."
         )
